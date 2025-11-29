@@ -2,6 +2,8 @@ package com.store.jewellry.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +34,9 @@ public class AuthController {
     @PostMapping("/update-password")
     public ResponseEntity<?> updatePassword(@RequestBody PasswordUpdateRequest request) {
         return ResponseEntity.ok(authService.updatePassword(request));
+    }
+    @GetMapping("/user/{email}")
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(authService.getUserByEmail(email));
     }
 }

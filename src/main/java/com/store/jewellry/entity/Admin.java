@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "admon")
+@Table(name = "admin")
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,8 @@ public class Admin {
 
     private String password;
     private String role = "ADMIN";
-    
+    public Admin() {
+    }
     public Admin(String email, String password, String role) {
         this.email = email;
         this.password = password;

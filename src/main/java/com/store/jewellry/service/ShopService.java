@@ -1,10 +1,12 @@
 package com.store.jewellry.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.store.jewellry.dto.PasswordUpdateRequest;
 import com.store.jewellry.entity.Shop;
 import com.store.jewellry.repository.ShopRepository;
 
@@ -43,5 +45,19 @@ public class ShopService {
         shop.setPhone(details.getPhone());
     
         return shopRepository.save(shop);
+    }
+    public String updatePassword(PasswordUpdateRequest request){
+        Optional<Shop> shopOpt = shopRepository.findByEmail(request.getEmail());
+        if (shopOpt.isPresent()) {
+            Shop shop = shopOpt.get();
+            if (!shop.getPassword().equals(request.getOldPassword())) {
+                return "Incorrect old password";
+            }
+            shop.setPassword(request.getNewPassword());
+            shopRepository.save(shop);
+            return "Shop password updated successfully";
+        }
+
+        return "Account not found!";
     }
 }

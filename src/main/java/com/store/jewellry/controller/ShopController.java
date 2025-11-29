@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.store.jewellry.dto.PasswordUpdateRequest;
 import com.store.jewellry.entity.Shop;
 import com.store.jewellry.service.ShopService;
 
@@ -45,5 +46,9 @@ public class ShopController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateShop(@PathVariable Long id, @RequestBody Shop shopDetails) {
         return ResponseEntity.ok(shopService.updateShop(id, shopDetails));
+    }
+    @PostMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody PasswordUpdateRequest request) {
+        return ResponseEntity.ok(shopService.updatePassword(request));
     }
 }
