@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.store.jewellry.dto.PasswordUpdateRequest;
@@ -23,10 +24,12 @@ public class AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     public String registerAdmin(Admin admin) {
         if (adminRepository.findByEmail(admin.getEmail()).isPresent()) {
             return "Admin with this email already exists";
         }
+        admin.setPassword(encoder.encode(admin.getPassword()));
         adminRepository.save(admin);
         return "Admin registered successfully";
     }
@@ -76,10 +79,10 @@ public class AdminService {
         Optional<Admin> adminOpt = adminRepository.findByEmail(request.getEmail());
         if (adminOpt.isPresent()) {
             Admin admin = adminOpt.get();
-            if (!admin.getPassword().equals(request.getOldPassword())) {
+            if (!encoder.matches(request.getOldPassword(), admin.getPassword())) {
                 return "Incorrect old password";
             }
-            admin.setPassword(request.getNewPassword());
+            admin.setPassword(encoder.encode(request.getNewPassword()));
             adminRepository.save(admin);
             return "Admin password updated successfully";
         }

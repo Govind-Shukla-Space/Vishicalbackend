@@ -2,6 +2,7 @@ package com.store.jewellry.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,19 +35,24 @@ public class ShopController {
         return ResponseEntity.ok(savedShop);
     }
 
+    @PreAuthorize("hasAnyRole('SHOP','ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getShopDetails(@PathVariable Long id) {
         return ResponseEntity.ok(shopService.getShopById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/approved")
     public ResponseEntity<?> getApprovedShops() {
         return ResponseEntity.ok(shopService.getApprovedShops());
     }
+
+    @PreAuthorize("hasRole('SHOP')")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateShop(@PathVariable Long id, @RequestBody Shop shopDetails) {
         return ResponseEntity.ok(shopService.updateShop(id, shopDetails));
     }
+    @PreAuthorize("hasRole('SHOP')")
     @PostMapping("/update-password")
     public ResponseEntity<?> updatePassword(@RequestBody PasswordUpdateRequest request) {
         return ResponseEntity.ok(shopService.updatePassword(request));

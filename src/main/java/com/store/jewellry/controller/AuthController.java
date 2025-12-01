@@ -2,6 +2,7 @@ package com.store.jewellry.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,10 +32,12 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/update-password")
     public ResponseEntity<?> updatePassword(@RequestBody PasswordUpdateRequest request) {
         return ResponseEntity.ok(authService.updatePassword(request));
     }
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/user/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(authService.getUserByEmail(email));
