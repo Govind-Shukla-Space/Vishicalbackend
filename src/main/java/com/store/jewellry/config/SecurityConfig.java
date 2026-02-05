@@ -39,6 +39,7 @@ public class SecurityConfig {
                         "/admin/register",
                         "/api/shop/register")
                 .permitAll()
+                .requestMatchers("/images/**").permitAll()
                 .anyRequest().authenticated());
 
         http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

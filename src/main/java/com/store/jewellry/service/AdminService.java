@@ -89,4 +89,26 @@ public class AdminService {
         }
         return "Account not found!";
     }
+    public void updateShopImage(Long shopId, String imageUrl) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new RuntimeException("Shop not found"));
+
+        shop.setImageUrl(imageUrl);
+        shopRepository.save(shop);
+    }
+
+    public Shop getShopImage(Long id) {
+        return shopRepository.findById(id).orElseThrow();
+    }
+    public void updateAdminImage(Long adminId, String imageUrl) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        admin.setImageUrl(imageUrl);
+        adminRepository.save(admin);
+    }
+
+    public Admin getAdminImage(Long id) {
+        return adminRepository.findById(id).orElseThrow();
+    }
 }

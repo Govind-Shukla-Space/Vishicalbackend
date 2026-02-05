@@ -39,7 +39,7 @@ public class ShopService {
         Shop shop = shopRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shop not found"));
         if (!shop.getEmail().equals(details.getEmail())) {
-            if (shopRepository.findByEmail(shop.getEmail()).isPresent()) {
+            if (shopRepository.findByEmail(details.getEmail()).isPresent()) {
                 throw new RuntimeException("Email already in use!");
             }
         }
@@ -54,7 +54,7 @@ public class ShopService {
 
     public String updatePassword(PasswordUpdateRequest request) {
         Optional<Shop> shopOpt = shopRepository.findByEmail(request.getEmail());
-        
+
         if (shopOpt.isPresent()) {
             Shop shop = shopOpt.get();
             // Validate old password
@@ -67,5 +67,17 @@ public class ShopService {
             return "Shop password updated successfully";
         }
         return "Account not found!";
+    }
+
+    public void updateShopImage(Long shopId, String imageUrl) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new RuntimeException("Shop not found"));
+
+        shop.setImageUrl(imageUrl);
+        shopRepository.save(shop);
+    }
+
+    public Shop getShopImage(Long id) {
+        return shopRepository.findById(id).orElseThrow();
     }
 }

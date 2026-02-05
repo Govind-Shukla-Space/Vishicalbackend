@@ -19,17 +19,18 @@ public class Shop {
 
     @Column(unique = true)
     private String email;
-
+    
     private String password;
     private String ownerName;
     private String address;
     private String phone;
     private Boolean approved = false; 
     private String role = "SHOP";
-    
+    @Column(name = "image_url")
+    private String imageUrl;
     public Shop() {
     }
-    public Shop(String shopName, String email, String password, String ownerName, String address, String phone, Boolean approved, String role) {
+    public Shop(String shopName, String email, String password, String ownerName, String address, String phone, Boolean approved, String role,String imageUrl) {
         this.shopName = shopName;
         this.email = email;
         this.password = password;
@@ -38,6 +39,7 @@ public class Shop {
         this.phone = phone;
         this.approved = approved;
         this.role = role;
+        this.imageUrl = imageUrl;
     }
     
     public String getShopName() {
@@ -88,5 +90,10 @@ public class Shop {
     public void setRole(String role) {
         this.role = role;
     }
-    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

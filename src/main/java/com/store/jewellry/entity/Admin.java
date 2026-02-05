@@ -1,5 +1,7 @@
 package com.store.jewellry.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,15 +20,18 @@ public class Admin {
 
     @Column(unique = true)
     private String email;
-
     private String password;
     private String role = "ADMIN";
+    @Column(name = "image_url")
+    private String imageUrl;
+    
     public Admin() {
     }
-    public Admin(String email, String password, String role) {
+    public Admin(String email, String password, String role,String imageUrl) {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.imageUrl = imageUrl;
     }
 
     public String getEmail() {
@@ -46,5 +51,11 @@ public class Admin {
     }
     public void setRole(String role) {
         this.role = role;
+    }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

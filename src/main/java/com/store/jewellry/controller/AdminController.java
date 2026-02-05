@@ -1,5 +1,7 @@
 package com.store.jewellry.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,11 +14,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.store.jewellry.dto.ImageUploadResponse;
 import com.store.jewellry.dto.PasswordUpdateRequest;
 import com.store.jewellry.entity.Admin;
+import com.store.jewellry.entity.Shop;
 import com.store.jewellry.service.AdminService;
+import com.store.jewellry.service.ImageStorageService;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +36,8 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
-
+    @Autowired
+    private ImageStorageService imageStorageService;
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody Admin admin) {
         return ResponseEntity.ok(adminService.registerAdmin(admin));
@@ -82,4 +91,21 @@ public class AdminController {
         return auth.getAuthorities().toString();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")  
+    @PutMapping("/{id}/upload-image")
+    public ResponseEntity<ImageUploadResponse> uploadShopImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        String imageUrl = imageStorageService.storeImage(file);
+        adminService.updateAdminImage(id, imageUrl);
+
+        return ResponseEntity.ok(new ImageUploadResponse(imageUrl));
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/image/{id}")
+    public Admin getAdminImage(@PathVariable Long id) {
+        return adminService.getAdminImage(id);
+    }
 }

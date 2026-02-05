@@ -40,52 +40,50 @@ public class AuthService {
     }
 
     public Map<String, Object> login(LoginRequest request) {
-
         Map<String, Object> response = new HashMap<>();
-
         // USER LOGIN
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (user.isPresent() && encoder.matches(request.getPassword(), user.get().getPassword())) {
             String token = jwtService.generateToken(user.get().getEmail(), "USER");
-
             response.put("message", "User login successful");
             response.put("role", "USER");
             response.put("email", user.get().getEmail());
             response.put("token", token);
             return response;
         }
-
         // SHOP LOGIN
         Optional<Shop> shop = shopRepository.findByEmail(request.getEmail());
+        
         if (shop.isPresent() && encoder.matches(request.getPassword(), shop.get().getPassword())) {
-
             if (!shop.get().isApproved()) {
                 response.put("message", "Shop not approved yet");
                 return response;
             }
-
+            
             String token = jwtService.generateToken(shop.get().getEmail(), "SHOP");
-
+            
             response.put("message", "Shop login successful");
             response.put("role", "SHOP");
             response.put("email", shop.get().getEmail());
             response.put("token", token);
             return response;
         }
-
+        
         // ADMIN LOGIN
         Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
         if (admin.isPresent() && encoder.matches(request.getPassword(), admin.get().getPassword())) {
 
             String token = jwtService.generateToken(admin.get().getEmail(), "ADMIN");
-
+            
             response.put("message", "Admin login successful");
             response.put("role", "ADMIN");
             response.put("email", admin.get().getEmail());
             response.put("token", token);
             return response;
         }
-
+        System.out.println("Shop details: "+shop);
+        System.out.println("user details: "+user);
+        System.out.println("admin details: "+admin);
         response.put("message", "INVALID_CREDENTIALS");
         return response;
     }
@@ -108,5 +106,16 @@ public class AuthService {
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+    public void updateUserImage(Long userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setImageUrl(imageUrl);
+        userRepository.save(user);
+    }
+
+    public User getUserImage(Long id) {
+        return userRepository.findById(id).orElseThrow();
     }
 }
