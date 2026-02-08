@@ -16,6 +16,10 @@ import com.store.jewellry.entity.User;
 import com.store.jewellry.repository.AdminRepository;
 import com.store.jewellry.repository.ShopRepository;
 import com.store.jewellry.repository.UserRepository;
+import com.store.jewellry.security.CookieUtil;
+import com.store.jewellry.security.JwtService;
+import com.store.jewellry.dto.LogoutResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class AuthService {
@@ -27,6 +31,8 @@ public class AuthService {
     private AdminRepository adminRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private CookieUtil cookieUtil;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -39,35 +45,40 @@ public class AuthService {
         return "User registered successfully";
     }
 
-    public Map<String, Object> login(LoginRequest request) {
-        Map<String, Object> response = new HashMap<>();
+    public Map<String, Object> login(LoginRequest request, HttpServletResponse response) {
+
+        Map<String, Object> responsebODY = new HashMap<>();
         // USER LOGIN
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (user.isPresent() && encoder.matches(request.getPassword(), user.get().getPassword())) {
             String token = jwtService.generateToken(user.get().getEmail(), "USER");
-            response.put("id", user.get().getId());
-            response.put("message", "User login successful");
-            response.put("role", "USER");
-            response.put("email", user.get().getEmail());
-            response.put("token", token);
-            return response;
+            cookieUtil.addAuthCookies(response, token, null);
+            responsebODY.put("id", user.get().getId());
+            responsebODY.put("message", "User login successful");
+            responsebODY.put("role", "USER");
+            responsebODY.put("email", user.get().getEmail());
+            // responsebODY.put("token", token);
+            return responsebODY;
         }
         // SHOP LOGIN
         Optional<Shop> shop = shopRepository.findByEmail(request.getEmail());
         
         if (shop.isPresent() && encoder.matches(request.getPassword(), shop.get().getPassword())) {
             if (!shop.get().isApproved()) {
-                response.put("message", "Shop not approved yet");
-                return response;
+                responsebODY.put("message", "Shop not approved yet");
+                return responsebODY;
             }
             
             String token = jwtService.generateToken(shop.get().getEmail(), "SHOP");
-            response.put("id", shop.get().getId());
-            response.put("message", "Shop login successful");
-            response.put("role", "SHOP");
-            response.put("email", shop.get().getEmail());
-            response.put("token", token);
-            return response;
+            String shopId=shop.get().getId().toString();
+            cookieUtil.addAuthCookies(response, token, shopId);
+            responsebODY.put("id", shop.get().getId());
+            responsebODY.put("message", "Shop login successful");
+            responsebODY.put("role", "SHOP");
+            responsebODY.put("email", shop.get().getEmail());
+            responsebODY.put("shopId", shopId);
+            // responsebODY.put("token", token);
+            return responsebODY;
         }
         
         // ADMIN LOGIN
@@ -75,17 +86,21 @@ public class AuthService {
         if (admin.isPresent() && encoder.matches(request.getPassword(), admin.get().getPassword())) {
 
             String token = jwtService.generateToken(admin.get().getEmail(), "ADMIN");
-            response.put("id", admin.get().getId());
-            response.put("message", "Admin login successful");
-            response.put("role", "ADMIN");
-            response.put("email", admin.get().getEmail());
-            response.put("token", token);
-            return response;
+            cookieUtil.addAuthCookies(response, token, null);
+            responsebODY.put("id", admin.get().getId());
+            responsebODY.put("message", "Admin login successful");
+            responsebODY.put("role", "ADMIN");
+            responsebODY.put("email", admin.get().getEmail());
+            // responsebODY.put("token", token);
+            return responsebODY;
         }
-        response.put("message", "INVALID_CREDENTIALS");
-        return response;
+        responsebODY.put("message", "INVALID_CREDENTIALS");
+        return responsebODY;
     }
-
+    public LogoutResponse logout(HttpServletResponse response) {
+        cookieUtil.clearAuthCookies(response);
+        return new LogoutResponse("Logged out successfully");
+    }
     public String updatePassword(PasswordUpdateRequest request) {
 
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
@@ -104,16 +119,5 @@ public class AuthService {
 
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-    public void updateUserImage(Long userId, String imageUrl) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        user.setImageUrl(imageUrl);
-        userRepository.save(user);
-    }
-
-    public User getUserImage(Long id) {
-        return userRepository.findById(id).orElseThrow();
     }
 }

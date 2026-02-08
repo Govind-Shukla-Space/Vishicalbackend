@@ -1,4 +1,4 @@
-package com.store.jewellry.service;
+package com.store.jewellry.security;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;

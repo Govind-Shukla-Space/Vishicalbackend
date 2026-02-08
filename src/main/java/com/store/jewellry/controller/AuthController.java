@@ -14,6 +14,8 @@ import com.store.jewellry.dto.LoginRequest;
 import com.store.jewellry.dto.PasswordUpdateRequest;
 import com.store.jewellry.entity.User;
 import com.store.jewellry.service.AuthService;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 // @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -27,10 +29,20 @@ public class AuthController {
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         return ResponseEntity.ok(authService.registerUser(user));
     }
+    // @PostMapping("/login")
+    // public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    //     return ResponseEntity.ok(authService.login(request));
+    // }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        return ResponseEntity.ok(authService.login(request, response));
     }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // Clear both token and shopId cookies
+        return ResponseEntity.ok(authService.logout(response));
+    }
+
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/update-password")
     public ResponseEntity<?> updatePassword(@RequestBody PasswordUpdateRequest request) {

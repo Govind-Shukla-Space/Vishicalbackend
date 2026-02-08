@@ -39,7 +39,8 @@ public class SecurityConfig {
                         "/auth/login",
                         "/auth/register/user",
                         "/admin/register",
-                        "/api/shop/register")
+                        "/api/shop/register",
+                    "/auth/logout")
                 .permitAll()
                 .requestMatchers("/images/**").permitAll()
                 .requestMatchers("/api/products/shop/**").permitAll()
