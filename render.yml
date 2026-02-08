@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: vishical-backend
+    runtime: java
+    plan: free
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/jewellry-0.0.1-SNAPSHOT.jar"
+    envVars:
+      - key: DB_URL
+        fromDatabase:
+          name: vishical
+          property: connectionString
+
+      - key: DB_USERNAME
+        fromDatabase:
+          name: vishical
+          property: user
+
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: vishical
+          property: password
+
+      - key: CLOUD_NAME
+        value: dwmlydwe1
+
+      - key: CLOUD_KEY
+        value: 119198964622825
+
+      - key: CLOUD_SECRET
+        value: Jlve5jITpxDERXOLaqcsWEthxyo
+
+      - key: JWT_SECRET
+        value: mysecretkeymysecretkeymysecretkey123
