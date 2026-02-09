@@ -5,15 +5,16 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.store.vishical.dto.LoginRequest;
 import com.store.vishical.dto.LogoutResponse;
 import com.store.vishical.dto.PasswordUpdateRequest;
+import com.store.vishical.entity.Admin;
 import com.store.vishical.entity.Shop;
 import com.store.vishical.entity.User;
+import com.store.vishical.repository.AdminRepository;
 import com.store.vishical.repository.ShopRepository;
 import com.store.vishical.repository.UserRepository;
 import com.store.vishical.security.CookieUtil;
@@ -31,11 +32,8 @@ public class AuthService {
     private JwtService jwtService;
     @Autowired
     private CookieUtil cookieUtil;
-    @Value("${admin-email}")
-    private String adminEmail;
-
-    @Value("${admin-password}")
-    private String adminPassword;
+    @Autowired
+    private AdminRepository adminRepository;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -85,18 +83,16 @@ public class AuthService {
         }
 
         // ADMIN LOGIN
-        // Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
-        // if (admin.isPresent() && encoder.matches(request.getPassword(),
-        // admin.get().getPassword())) {
+        Optional<Admin> admin = adminRepository.findByEmail(request.getEmail());
+        if (admin.isPresent() && encoder.matches(request.getPassword(),
+        admin.get().getPassword())) {
 
-        if (request.getEmail().equals(adminEmail) && request.getPassword().equals(adminPassword)) {
-
-            String token = jwtService.generateToken(adminEmail, "ADMIN");
+            String token = jwtService.generateToken(admin.get().getEmail(), "ADMIN");
             cookieUtil.addAuthCookies(response, token, null);
-            responsebODY.put("id", 1);
+            responsebODY.put("id", admin.get().getId());
             responsebODY.put("message", "Admin login successful");
             responsebODY.put("role", "ADMIN");
-            responsebODY.put("email", adminEmail);
+            responsebODY.put("email", admin.get().getEmail());
             // responsebODY.put("token", token);
             return responsebODY;
         }

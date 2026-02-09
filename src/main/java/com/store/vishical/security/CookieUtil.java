@@ -25,16 +25,12 @@ public class CookieUtil {
         cookie.setHttpOnly(true); // Cannot be accessed via JavaScript
         cookie.setSecure(secure); // Only sent over HTTPS in production
         cookie.setPath("/");
-        cookie.setMaxAge((int) (jwtExpiration / 1000)); // Convert milliseconds to seconds
+        cookie.setMaxAge((int)jwtExpiration); // Convert milliseconds to seconds
         cookie.setAttribute("SameSite", "None"); // Allow cross-site cookies for subdomains (adjust as needed)
         // Set domain for cross-subdomain access if needed
         // if (!"localhost".equals(cookieDomain)) {
         //     cookie.setDomain(cookieDomain);
-        // }
-        
-        // SameSite=Lax for CSRF protection while allowing top-level navigation
-        cookie.setAttribute("SameSite", "Lax");
-        
+        // }        
         return cookie;
     }
 
